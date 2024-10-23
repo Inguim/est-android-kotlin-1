@@ -1,24 +1,28 @@
 package com.example.orgs.ui.activity
 
-import android.os.Bundle
+import android.content.Intent
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.orgs.R
-import com.example.orgs.model.Produto
+import com.example.orgs.dao.ProdutosDao
 import com.example.orgs.ui.recyclerView.adapter.ListaProdutosAdapter
-import java.math.BigDecimal
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onResume() {
+        super.onResume()
         setContentView(R.layout.activity_main)
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        val dao = ProdutosDao()
+        Log.i("MainActivity", "onCreate: ${dao.listar()}")
         recyclerView.adapter = ListaProdutosAdapter(
-            context = this, produtos = listOf(
-                Produto("Manga", "Mangá of Zé", BigDecimal("19.99")),
-                Produto("Uva", "Uva of Zé", BigDecimal("10.99")),
-            )
+            context = this, produtos = dao.listar()
         )
+        val fab = findViewById<FloatingActionButton>(R.id.floatingActionButton)
+        fab.setOnClickListener {
+            val intent = Intent(this, FormularioProdutoActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

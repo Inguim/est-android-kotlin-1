@@ -12,16 +12,18 @@ import com.example.orgs.model.Produto
 // RecyclerView: responsável por exibir informações em lista
 class ListaProdutosAdapter(
     private val context: Context,
-    private val produtos: List<Produto>
+    produtos: List<Produto>
 ) : RecyclerView.Adapter<ListaProdutosAdapter.ViewHolder>() {
+
+    private val dataset = produtos.toMutableList()
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun vincula(produto: Produto) {
-            val nome = itemView.findViewById<TextView>(R.id.nome)
+            val nome = itemView.findViewById<TextView>(R.id.activity_formulario_produto_item_nome)
             nome.text = produto.nome
-            val descricao = itemView.findViewById<TextView>(R.id.descricao)
+            val descricao = itemView.findViewById<TextView>(R.id.activity_formulario_produto_item_descricao)
             descricao.text = produto.descricao
-            val valor = itemView.findViewById<TextView>(R.id.valor)
+            val valor = itemView.findViewById<TextView>(R.id.activity_formulario_produto_item_valor)
             valor.text = produto.valor.toPlainString()
         }
     }
@@ -35,10 +37,16 @@ class ListaProdutosAdapter(
 
     // Indica o item, posição e o ViewHolder que do mesmo
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val produto = produtos[position]
+        val produto = dataset[position]
         holder.vincula(produto)
     }
 
     // Representa a quantidade de items que o mesmo irá representar
-    override fun getItemCount(): Int = produtos.size
+    override fun getItemCount(): Int = dataset.size
+
+    fun atualizar(produtos: List<Produto>) {
+        this.dataset.clear()
+        this.dataset.addAll(produtos)
+        notifyDataSetChanged()
+    }
 }

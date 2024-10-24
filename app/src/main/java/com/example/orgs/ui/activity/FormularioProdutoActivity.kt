@@ -6,17 +6,25 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.example.orgs.R
 import com.example.orgs.dao.ProdutosDao
+import com.example.orgs.databinding.ActivityFormularioProdutoBinding
+import com.example.orgs.databinding.ActivityListaProdutosBinding
 import com.example.orgs.model.Produto
 import java.math.BigDecimal
 
-class FormularioProdutoActivity : AppCompatActivity(R.layout.activity_formulario_produto) {
+class FormularioProdutoActivity : AppCompatActivity() {
+    private val binding by lazy {
+        ActivityFormularioProdutoBinding.inflate(layoutInflater)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         configurarBotaoSalvar()
+        setContentView(binding.root)
     }
 
     private fun configurarBotaoSalvar() {
-        val botaoSalvar = findViewById<Button>(R.id.activity_formulario_produto_botao_salvar)
+//        val botaoSalvar = findViewById<Button>(R.id.activity_formulario_produto_botao_salvar)
+        val botaoSalvar = binding.activityFormularioProdutoBotaoSalvar
         val dao = ProdutosDao()
         botaoSalvar.setOnClickListener {
             val produtoNovo = criarProduto()
@@ -26,11 +34,14 @@ class FormularioProdutoActivity : AppCompatActivity(R.layout.activity_formulario
     }
 
     private fun criarProduto(): Produto {
-        val campoNome = findViewById<EditText>(R.id.activity_formulario_produto_item_nome)
+//        val campoNome = findViewById<EditText>(R.id.activity_formulario_produto_item_nome)
+        val campoNome = binding.activityFormularioProdutoItemNome
         val nome = campoNome.text.toString()
-        val campoDescricao = findViewById<EditText>(R.id.activity_formulario_produto_item_descricao)
+//        val campoDescricao = findViewById<EditText>(R.id.activity_formulario_produto_item_descricao)
+        val campoDescricao = binding.activityFormularioProdutoItemDescricao
         val descricao = campoDescricao.text.toString()
-        val campoValor = findViewById<EditText>(R.id.activity_formulario_produto_item_valor)
+//        val campoValor = findViewById<EditText>(R.id.activity_formulario_produto_item_valor)
+        val campoValor = binding.activityFormularioProdutoItemValor
         val valorTexto = campoValor.text.toString()
         val valor = if (valorTexto.isBlank()) BigDecimal.ZERO else BigDecimal(valorTexto)
         return Produto(nome, descricao, valor)

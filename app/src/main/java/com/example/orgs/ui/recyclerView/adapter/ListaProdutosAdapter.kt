@@ -1,11 +1,15 @@
 package com.example.orgs.ui.recyclerView.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.orgs.databinding.ProdutoItemBinding
 import com.example.orgs.model.Produto
+import java.math.BigDecimal
+import java.text.NumberFormat
+import java.util.Locale
 
 // RecyclerView: responsável por exibir informações em lista
 class ListaProdutosAdapter(
@@ -24,7 +28,12 @@ class ListaProdutosAdapter(
             val descricao = binding.produtoItemDescricao
             descricao.text = produto.descricao
             val valor = binding.produtoItemValor
-            valor.text = produto.valor.toPlainString()
+            valor.text = formataParaMoedaBR(produto.valor)
+        }
+
+        private fun formataParaMoedaBR(valor: BigDecimal): String {
+            val formatador: NumberFormat = NumberFormat.getCurrencyInstance(Locale("pt", "br"))
+            return formatador.format(valor)
         }
     }
 
@@ -44,6 +53,7 @@ class ListaProdutosAdapter(
     // Representa a quantidade de items que o mesmo irá representar
     override fun getItemCount(): Int = dataset.size
 
+    @SuppressLint("NotifyDataSetChanged")
     fun atualizar(produtos: List<Produto>) {
         this.dataset.clear()
         this.dataset.addAll(produtos)

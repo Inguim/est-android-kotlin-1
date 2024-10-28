@@ -29,11 +29,11 @@ class FormularioProdutoActivity : AppCompatActivity() {
     }
 
     private fun criarProduto(): Produto {
-        val campoNome = binding.activityFormularioProdutoItemNome
+        val campoNome = binding.produtoItemNome
         val nome = campoNome.text.toString()
-        val campoDescricao = binding.activityFormularioProdutoItemDescricao
+        val campoDescricao = binding.produtoItemDescricao
         val descricao = campoDescricao.text.toString()
-        val campoValor = binding.activityFormularioProdutoItemValor
+        val campoValor = binding.produtoItemValor
         val valorTexto = campoValor.text.toString()
         val valor = if (valorTexto.isBlank()) BigDecimal.ZERO else BigDecimal(valorTexto)
         return Produto(nome, descricao, valor)

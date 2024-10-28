@@ -19,11 +19,11 @@ class ListaProdutosAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun vincula(produto: Produto) {
-            val nome = binding.activityFormularioProdutoItemNome
+            val nome = binding.produtoItemNome
             nome.text = produto.nome
-            val descricao = binding.activityFormularioProdutoItemDescricao
+            val descricao = binding.produtoItemDescricao
             descricao.text = produto.descricao
-            val valor = binding.activityFormularioProdutoItemValor
+            val valor = binding.produtoItemValor
             valor.text = produto.valor.toPlainString()
         }
     }

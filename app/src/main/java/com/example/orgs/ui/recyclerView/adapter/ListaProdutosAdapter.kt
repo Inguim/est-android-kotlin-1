@@ -4,13 +4,14 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build.VERSION.SDK_INT
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
-import coil.load
 import com.example.orgs.databinding.ProdutoItemBinding
+import com.example.orgs.extensions.carregar
 import com.example.orgs.model.Produto
 import java.math.BigDecimal
 import java.text.NumberFormat
@@ -35,7 +36,12 @@ class ListaProdutosAdapter(
             val valor = binding.produtoItemValor
             valor.text = formataParaMoedaBR(produto.valor)
             val imageLoader = generateImageLoader()
-            binding.imageView.load(produto.imagem, imageLoader)
+            binding.imageView.visibility = if (produto.imagem != null) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+            binding.imageView.carregar(produto.imagem, imageLoader)
         }
 
         private fun generateImageLoader(): ImageLoader {

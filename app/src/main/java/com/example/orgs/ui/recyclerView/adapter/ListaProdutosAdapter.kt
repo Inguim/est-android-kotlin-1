@@ -2,14 +2,10 @@ package com.example.orgs.ui.recyclerView.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Build.VERSION.SDK_INT
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import coil.ImageLoader
-import coil.decode.GifDecoder
-import coil.decode.ImageDecoderDecoder
 import com.example.orgs.databinding.ProdutoItemBinding
 import com.example.orgs.extensions.carregar
 import com.example.orgs.extensions.gerarImageLoader

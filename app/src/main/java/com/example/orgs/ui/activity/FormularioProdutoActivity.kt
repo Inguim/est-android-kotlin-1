@@ -1,17 +1,9 @@
 package com.example.orgs.ui.activity
 
-import android.content.Context
-import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
-import android.widget.ImageView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import coil.ImageLoader
-import coil.decode.GifDecoder
-import coil.decode.ImageDecoderDecoder
 import com.example.orgs.dao.ProdutosDao
 import com.example.orgs.databinding.ActivityFormularioProdutoBinding
-import com.example.orgs.databinding.FormularioImagemBinding
 import com.example.orgs.extensions.carregar
 import com.example.orgs.extensions.gerarImageLoader
 import com.example.orgs.model.Produto

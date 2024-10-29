@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">Orgs</string>
+    <string name="app_formulario_produtos_title">Cadastrar produto</string>
     <string name="novo_produto">Novo produto</string>
     <string name="botao_carregar_imagem">Carregar</string>
+    <string name="formulario_produto_error_nome">⚠️ O campo nome é obrigatório!</string>
+    <string name="formulario_produto_error_descricao">⚠️ O campo descrição é obrigatório!</string>
+    <string name="formulario_produto_error_valor">⚠️ O campo valor é obrigatório!</string>
 </resources>

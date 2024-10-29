@@ -49,4 +49,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation("io.coil-kt:coil:1.2.2")
+    implementation("io.coil-kt:coil-gif:1.2.2")
 }

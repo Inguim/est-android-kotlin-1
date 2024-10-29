@@ -2,9 +2,14 @@ package com.example.orgs.ui.recyclerView.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build.VERSION.SDK_INT
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil.ImageLoader
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
+import coil.load
 import com.example.orgs.databinding.ProdutoItemBinding
 import com.example.orgs.model.Produto
 import java.math.BigDecimal
@@ -29,6 +34,19 @@ class ListaProdutosAdapter(
             descricao.text = produto.descricao
             val valor = binding.produtoItemValor
             valor.text = formataParaMoedaBR(produto.valor)
+            val imageLoader = generateImageLoader()
+            binding.imageView.load(produto.imagem, imageLoader)
+        }
+
+        private fun generateImageLoader(): ImageLoader {
+            return ImageLoader.Builder(binding.root.context)
+                .componentRegistry {
+                    if (SDK_INT >= 28) {
+                        add(ImageDecoderDecoder(context = binding.root.context))
+                    } else {
+                        add(GifDecoder())
+                    }
+                }.build()
         }
 
         private fun formataParaMoedaBR(valor: BigDecimal): String {

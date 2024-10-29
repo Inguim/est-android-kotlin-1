@@ -18,7 +18,7 @@ class ProdutosDao {
             Produto(
                 "Banana",
                 "Banana naninca",
-                BigDecimal("19.99")
+                BigDecimal("19.99"),
             )
         )
     }

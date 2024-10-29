@@ -1,7 +1,9 @@
 package com.example.orgs.ui.activity
 
+import android.content.Context
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import coil.ImageLoader
@@ -11,7 +13,9 @@ import com.example.orgs.dao.ProdutosDao
 import com.example.orgs.databinding.ActivityFormularioProdutoBinding
 import com.example.orgs.databinding.FormularioImagemBinding
 import com.example.orgs.extensions.carregar
+import com.example.orgs.extensions.gerarImageLoader
 import com.example.orgs.model.Produto
+import com.example.orgs.ui.dialog.FormularioImagemDialog
 import java.math.BigDecimal
 
 class FormularioProdutoActivity : AppCompatActivity() {
@@ -25,21 +29,12 @@ class FormularioProdutoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         configurarBotaoSalvar()
-        val imageLoader = gerarImageLoader()
         binding.activityFormularioProdutoImagem.setOnClickListener() {
-            val bindingFormularioImagem = FormularioImagemBinding.inflate(layoutInflater)
-            bindingFormularioImagem.formularioImagemBotaoCarregar.setOnClickListener() {
-                url = bindingFormularioImagem.formularioImagemUrl.text.toString()
-                bindingFormularioImagem.formularioImagemImagemview.carregar(url, imageLoader)
+            val imageLoader = binding.activityFormularioProdutoImagem.gerarImageLoader(this)
+            FormularioImagemDialog(this).show(url) { urlImagem ->
+                url = urlImagem
+                binding.activityFormularioProdutoImagem.carregar(url, imageLoader)
             }
-            AlertDialog.Builder(this)
-                .setView(bindingFormularioImagem.root)
-                .setPositiveButton("Confirmar") { _, _ ->
-                    url = bindingFormularioImagem.formularioImagemUrl.text.toString()
-                    binding.activityFormularioProdutoImagem.carregar(url, imageLoader)
-                }
-                .setNegativeButton("Cancelar") { _, _ -> }
-                .show()
         }
     }
 
@@ -62,16 +57,5 @@ class FormularioProdutoActivity : AppCompatActivity() {
         val valorTexto = campoValor.text.toString()
         val valor = if (valorTexto.isBlank()) BigDecimal.ZERO else BigDecimal(valorTexto)
         return Produto(nome, descricao, valor, url)
-    }
-
-    private fun gerarImageLoader(): ImageLoader {
-        return ImageLoader.Builder(this)
-            .componentRegistry {
-                if (SDK_INT >= 28) {
-                    add(ImageDecoderDecoder(this@FormularioProdutoActivity))
-                } else {
-                    add(GifDecoder())
-                }
-            }.build()
     }
 }

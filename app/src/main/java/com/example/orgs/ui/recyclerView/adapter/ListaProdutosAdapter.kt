@@ -12,6 +12,7 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import com.example.orgs.databinding.ProdutoItemBinding
 import com.example.orgs.extensions.carregar
+import com.example.orgs.extensions.gerarImageLoader
 import com.example.orgs.model.Produto
 import java.math.BigDecimal
 import java.text.NumberFormat
@@ -35,24 +36,13 @@ class ListaProdutosAdapter(
             descricao.text = produto.descricao
             val valor = binding.produtoItemValor
             valor.text = formataParaMoedaBR(produto.valor)
-            val imageLoader = generateImageLoader()
+            val imageLoader = binding.imageView.gerarImageLoader(binding.root.context)
             binding.imageView.visibility = if (produto.imagem != null) {
                 View.VISIBLE
             } else {
                 View.GONE
             }
             binding.imageView.carregar(produto.imagem, imageLoader)
-        }
-
-        private fun generateImageLoader(): ImageLoader {
-            return ImageLoader.Builder(binding.root.context)
-                .componentRegistry {
-                    if (SDK_INT >= 28) {
-                        add(ImageDecoderDecoder(context = binding.root.context))
-                    } else {
-                        add(GifDecoder())
-                    }
-                }.build()
         }
 
         private fun formataParaMoedaBR(valor: BigDecimal): String {

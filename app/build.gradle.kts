@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+
+    // necessario para enviar dados entre Activities
+    id("kotlin-parcelize")
 }
 
 android {

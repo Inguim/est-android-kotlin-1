@@ -9,9 +9,13 @@ import coil.decode.ImageDecoderDecoder
 import coil.load
 import com.example.orgs.R
 
-fun ImageView.carregar(url: String? = null, imageLoader: ImageLoader) {
+fun ImageView.carregar(
+    url: String? = null,
+    imageLoader: ImageLoader,
+    fallback: Int = R.drawable.imagem_padrao
+) {
     load(url, imageLoader) {
-        fallback(R.drawable.erro)
+        fallback(fallback)
         error(R.drawable.erro)
         placeholder(R.drawable.placeholder)
     }

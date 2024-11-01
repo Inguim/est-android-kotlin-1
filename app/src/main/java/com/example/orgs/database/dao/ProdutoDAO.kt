@@ -9,7 +9,7 @@ import com.example.orgs.model.Produto
 
 @Dao
 interface ProdutoDAO {
-    @Query("""SELECT * FROM Produto""")
+    @Query("SELECT * FROM Produto")
     fun listar(): List<Produto>
 
     @Insert
@@ -20,4 +20,7 @@ interface ProdutoDAO {
 
     @Update
     fun alterar(produto: Produto)
+
+    @Query("SELECT * FROM Produto WHERE id = :id")
+    fun listarPorId(id: Long): Produto?
 }

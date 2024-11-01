@@ -49,12 +49,12 @@ class DetalhesProdutoActivity : AppCompatActivity() {
     }
 
     private fun loadProduto() {
-        produto = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        produto = ((if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra(CHAVE_PRODUTO, Produto::class.java)
         } else {
             intent.getParcelableExtra<Produto>(CHAVE_PRODUTO)
-        })?.let { it } ?: throw IllegalArgumentException("Produto extra is missing")
-        produto?.let { dado -> preencherView(dado) } ?: finish()
+        })?.let { it } ?: finish()) as Produto
+        produto?.let { dado -> preencherView(dado) }
     }
 
     private fun preencherView(produto: Produto) {

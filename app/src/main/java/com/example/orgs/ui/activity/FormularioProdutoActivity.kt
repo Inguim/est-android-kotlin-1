@@ -53,7 +53,7 @@ class FormularioProdutoActivity : AppCompatActivity() {
         val campoValor = binding.activityFormularioProdutoValor
         val valorTexto = campoValor.text.toString()
         val valor = if (valorTexto.isBlank()) BigDecimal.ZERO else BigDecimal(valorTexto)
-        return Produto(nome, descricao, valor, url)
+        return Produto(nome = nome, descricao = descricao, valor = valor, imagem = url)
     }
 
     private fun validarDado(): Boolean {

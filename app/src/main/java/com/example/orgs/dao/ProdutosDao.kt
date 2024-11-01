@@ -1,7 +1,6 @@
 package com.example.orgs.dao
 
 import com.example.orgs.model.Produto
-import java.math.BigDecimal
 
 class ProdutosDao {
 

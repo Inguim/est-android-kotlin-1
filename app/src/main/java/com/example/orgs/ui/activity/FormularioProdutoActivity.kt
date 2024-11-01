@@ -24,7 +24,7 @@ class FormularioProdutoActivity : AppCompatActivity() {
         setContentView(binding.root)
         title = getString(R.string.app_formulario_produtos_title)
         configurarBotaoSalvar()
-        binding.activityFormularioProdutoImagem.setOnClickListener() {
+        binding.activityFormularioProdutoImagem.setOnClickListener {
             val imageLoader = binding.activityFormularioProdutoImagem.gerarImageLoader(this)
             FormularioImagemDialog(this).show(url) { urlImagem ->
                 url = urlImagem

@@ -2,7 +2,11 @@ package com.example.orgs.ui.activity
 
 import android.os.Build
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.example.orgs.R
+import com.example.orgs.database.AppDataBase
 import com.example.orgs.databinding.ActivityDetalhesProdutoBinding
 import com.example.orgs.extensions.carregar
 import com.example.orgs.extensions.gerarImageLoader
@@ -10,6 +14,7 @@ import com.example.orgs.extensions.moedaBR
 import com.example.orgs.model.Produto
 
 class DetalhesProdutoActivity : AppCompatActivity() {
+    private lateinit var produto: Produto
     private val binding by lazy {
         ActivityDetalhesProdutoBinding.inflate(layoutInflater)
     }
@@ -20,15 +25,35 @@ class DetalhesProdutoActivity : AppCompatActivity() {
         loadProduto()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_detalhes_produto, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (::produto.isInitialized) {
+            val db = AppDataBase.instancia(this)
+            val produtoDAO = db.produtoDao()
+            when (item.itemId) {
+                R.id.menu_detalhes_produto_editar -> {
+
+                }
+
+                R.id.menu_detalhes_produto_remover -> {
+                    produtoDAO.remover(produto)
+                    finish()
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     private fun loadProduto() {
-        // busca dado enviado por outra Activity a está
-        val produto = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            //método novo para os SDK mais novos
+        produto = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra(CHAVE_PRODUTO, Produto::class.java)
         } else {
-            //método deprecated  para os SDK mais antigos
             intent.getParcelableExtra<Produto>(CHAVE_PRODUTO)
-        }
+        })?.let { it } ?: throw IllegalArgumentException("Produto extra is missing")
         produto?.let { dado -> preencherView(dado) } ?: finish()
     }
 

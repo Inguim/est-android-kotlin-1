@@ -10,14 +10,18 @@ import com.example.orgs.database.AppDataBase
 import com.example.orgs.databinding.ActivityDetalhesProdutoBinding
 import com.example.orgs.extensions.carregar
 import com.example.orgs.extensions.gerarImageLoader
-import com.example.orgs.extensions.getParcelableExtraCompat
+import com.example.orgs.extensions.getLongExtraCompact
 import com.example.orgs.extensions.moedaBR
 import com.example.orgs.model.Produto
 
 class DetalhesProdutoActivity : AppCompatActivity() {
-    private lateinit var produto: Produto
+    private var produtoId: Long = 0L
+    private var produto: Produto? = null
     private val binding by lazy {
         ActivityDetalhesProdutoBinding.inflate(layoutInflater)
+    }
+    private val produtoDAO by lazy {
+        AppDataBase.instancia(this).produtoDao()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,37 +31,42 @@ class DetalhesProdutoActivity : AppCompatActivity() {
         loadProduto()
     }
 
+    override fun onResume() {
+        super.onResume()
+        reloadProduto()
+    }
+
+    private fun reloadProduto() {
+        produto = produtoDAO.listarPorId(produtoId)
+        produto?.let {
+            preencherView(it)
+        } ?: finish()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_detalhes_produto, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (::produto.isInitialized) {
-            val db = AppDataBase.instancia(this)
-            val produtoDAO = db.produtoDao()
-            when (item.itemId) {
-                R.id.menu_detalhes_produto_editar -> {
-                    Intent(this, FormularioProdutoActivity::class.java).apply {
-                        putExtra(CHAVE_PRODUTO, produto)
-                        startActivity(this)
-                    }
+        when (item.itemId) {
+            R.id.menu_detalhes_produto_editar -> {
+                Intent(this, FormularioProdutoActivity::class.java).apply {
+                    putExtra(CHAVE_PRODUTO, produto)
+                    startActivity(this)
                 }
+            }
 
-                R.id.menu_detalhes_produto_remover -> {
-                    produtoDAO.remover(produto)
-                    finish()
-                }
+            R.id.menu_detalhes_produto_remover -> {
+                produto?.let { produtoDAO.remover(it) }
+                finish()
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
     private fun loadProduto() {
-        getParcelableExtraCompat<Produto>(CHAVE_PRODUTO)?.let {
-            produto = it
-            preencherView(it)
-        } ?: run { finish() }
+        produtoId = getLongExtraCompact(CHAVE_PRODUTO_ID, 0L)
     }
 
     private fun preencherView(produto: Produto) {

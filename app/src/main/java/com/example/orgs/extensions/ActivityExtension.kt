@@ -11,3 +11,10 @@ inline fun <reified T : Parcelable> Activity.getParcelableExtraCompat(key: Strin
         intent.getParcelableExtra(key) as? T
     }
 }
+
+fun Activity.getLongExtraCompact(
+    key: String,
+    defaultValue: Long = 0L
+): Long {
+    return intent.getLongExtra(key, defaultValue)
+}

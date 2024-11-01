@@ -3,13 +3,12 @@ package com.example.orgs.ui.activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.orgs.dao.ProdutosDao
+import com.example.orgs.database.AppDataBase
 import com.example.orgs.databinding.ActivityListaProdutosBinding
 import com.example.orgs.ui.recyclerView.adapter.ListaProdutosAdapter
 
 class ListaProdutosActivity : AppCompatActivity() {
-    private val dao = ProdutosDao()
-    private val adapter = ListaProdutosAdapter(context = this, produtos = dao.listar())
+    private val adapter = ListaProdutosAdapter(context = this)
     private val binding by lazy {
         ActivityListaProdutosBinding.inflate(layoutInflater)
     }
@@ -23,7 +22,9 @@ class ListaProdutosActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        adapter.atualizar(dao.listar())
+        val db = AppDataBase.instancia(this)
+        val produtoDao = db.produtoDao()
+        adapter.atualizar(produtoDao.listar())
     }
 
     private fun configuraFab() {

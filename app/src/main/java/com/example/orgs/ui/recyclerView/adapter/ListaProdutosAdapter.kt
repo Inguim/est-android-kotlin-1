@@ -15,7 +15,7 @@ import com.example.orgs.model.Produto
 // RecyclerView: responsável por exibir informações em lista
 class ListaProdutosAdapter(
     private val context: Context,
-    produtos: List<Produto>,
+    produtos: List<Produto> = emptyList(),
     var itemClick: (produto: Produto) -> Unit = {}
 ) : RecyclerView.Adapter<ListaProdutosAdapter.ViewHolder>() {
 

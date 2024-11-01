@@ -14,13 +14,31 @@ import com.example.orgs.model.Produto
 abstract class AppDataBase : RoomDatabase() {
     abstract fun produtoDao(): ProdutoDAO
 
+//    companion object {
+//        fun instancia(context: Context): AppDataBase {
+//            return Room.databaseBuilder(
+//                context,
+//                AppDataBase::class.java,
+//                "orgs.db"
+//            ).allowMainThreadQueries().build()
+//        }
+//    }
+
     companion object {
+        // Técnica para evitar a criação de varias instancias do banco de dados
+        @Volatile
+        private lateinit var db: AppDataBase
+
         fun instancia(context: Context): AppDataBase {
-             return Room.databaseBuilder(
+            if (::db.isInitialized) return db
+            return Room.databaseBuilder(
                 context,
                 AppDataBase::class.java,
                 "orgs.db"
-            ).allowMainThreadQueries().build()
+            ).allowMainThreadQueries()
+                .build().also {
+                    db = it
+                }
         }
     }
 }

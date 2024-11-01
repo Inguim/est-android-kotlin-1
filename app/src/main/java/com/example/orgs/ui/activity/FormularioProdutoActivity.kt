@@ -7,6 +7,7 @@ import com.example.orgs.database.AppDataBase
 import com.example.orgs.databinding.ActivityFormularioProdutoBinding
 import com.example.orgs.extensions.carregar
 import com.example.orgs.extensions.gerarImageLoader
+import com.example.orgs.extensions.getParcelableExtraCompat
 import com.example.orgs.model.Produto
 import com.example.orgs.ui.dialog.FormularioImagemDialog
 import com.google.android.material.textfield.TextInputEditText
@@ -16,8 +17,13 @@ class FormularioProdutoActivity : AppCompatActivity() {
     private val binding by lazy {
         ActivityFormularioProdutoBinding.inflate(layoutInflater)
     }
+    private val imageLoader by lazy {
+        binding.activityFormularioProdutoImagem.gerarImageLoader(this)
+    }
+    private var isEdit = false
 
     private var url: String? = null
+    private var idProduto = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,22 +31,45 @@ class FormularioProdutoActivity : AppCompatActivity() {
         title = getString(R.string.app_formulario_produtos_title)
         configurarBotaoSalvar()
         binding.activityFormularioProdutoImagem.setOnClickListener {
-            val imageLoader = binding.activityFormularioProdutoImagem.gerarImageLoader(this)
             FormularioImagemDialog(this).show(url) { urlImagem ->
                 url = urlImagem
                 binding.activityFormularioProdutoImagem.carregar(url, imageLoader)
             }
         }
+        onEdit()
+    }
+
+    private fun onEdit() {
+        getParcelableExtraCompat<Produto>(CHAVE_PRODUTO)?.let {
+            title = "Alterar produto"
+            isEdit = true
+            idProduto = it.id
+            url = it.imagem
+            preencherFormularioEdicao(it)
+        }
+    }
+
+    private fun preencherFormularioEdicao(produto: Produto) {
+        with(binding) {
+            activityFormularioProdutoImagem.carregar(produto.imagem, imageLoader)
+            activityFormularioProdutoNome.setText(produto.nome)
+            activityFormularioProdutoDescricao.setText(produto.descricao)
+            activityFormularioProdutoValor.setText(produto.valor.toPlainString())
+        }
     }
 
     private fun configurarBotaoSalvar() {
         val botaoSalvar = binding.activityFormularioProdutoBotaoSalvar
-        var db = AppDataBase.instancia(this)
+        val db = AppDataBase.instancia(this)
         val produtoDAO = db.produtoDao()
         botaoSalvar.setOnClickListener {
             if (!validarDado()) {
                 val produtoNovo = criarProduto()
-                produtoDAO.adicionar(produtoNovo)
+                if (!isEdit) {
+                    produtoDAO.adicionar(produtoNovo)
+                } else {
+                    produtoDAO.alterar(produtoNovo)
+                }
                 finish()
             }
         }
@@ -54,7 +83,13 @@ class FormularioProdutoActivity : AppCompatActivity() {
         val campoValor = binding.activityFormularioProdutoValor
         val valorTexto = campoValor.text.toString()
         val valor = if (valorTexto.isBlank()) BigDecimal.ZERO else BigDecimal(valorTexto)
-        return Produto(nome = nome, descricao = descricao, valor = valor, imagem = url)
+        return Produto(
+            id = idProduto,
+            nome = nome,
+            descricao = descricao,
+            valor = valor,
+            imagem = url
+        )
     }
 
     private fun validarDado(): Boolean {

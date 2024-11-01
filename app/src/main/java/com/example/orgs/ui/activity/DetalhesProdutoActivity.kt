@@ -1,6 +1,6 @@
 package com.example.orgs.ui.activity
 
-import android.os.Build
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -10,6 +10,7 @@ import com.example.orgs.database.AppDataBase
 import com.example.orgs.databinding.ActivityDetalhesProdutoBinding
 import com.example.orgs.extensions.carregar
 import com.example.orgs.extensions.gerarImageLoader
+import com.example.orgs.extensions.getParcelableExtraCompat
 import com.example.orgs.extensions.moedaBR
 import com.example.orgs.model.Produto
 
@@ -21,6 +22,7 @@ class DetalhesProdutoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        title = "Detalhes"
         setContentView(binding.root)
         loadProduto()
     }
@@ -36,7 +38,10 @@ class DetalhesProdutoActivity : AppCompatActivity() {
             val produtoDAO = db.produtoDao()
             when (item.itemId) {
                 R.id.menu_detalhes_produto_editar -> {
-
+                    Intent(this, FormularioProdutoActivity::class.java).apply {
+                        putExtra(CHAVE_PRODUTO, produto)
+                        startActivity(this)
+                    }
                 }
 
                 R.id.menu_detalhes_produto_remover -> {
@@ -49,12 +54,10 @@ class DetalhesProdutoActivity : AppCompatActivity() {
     }
 
     private fun loadProduto() {
-        produto = ((if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(CHAVE_PRODUTO, Produto::class.java)
-        } else {
-            intent.getParcelableExtra<Produto>(CHAVE_PRODUTO)
-        })?.let { it } ?: finish()) as Produto
-        produto?.let { dado -> preencherView(dado) }
+        getParcelableExtraCompat<Produto>(CHAVE_PRODUTO)?.let {
+            produto = it
+            preencherView(it)
+        } ?: run { finish() }
     }
 
     private fun preencherView(produto: Produto) {

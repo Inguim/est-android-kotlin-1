@@ -52,7 +52,7 @@ class DetalhesProdutoActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.menu_detalhes_produto_editar -> {
                 Intent(this, FormularioProdutoActivity::class.java).apply {
-                    putExtra(CHAVE_PRODUTO, produto)
+                    putExtra(CHAVE_PRODUTO_ID, produtoId)
                     startActivity(this)
                 }
             }

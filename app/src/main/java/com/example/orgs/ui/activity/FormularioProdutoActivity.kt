@@ -7,7 +7,7 @@ import com.example.orgs.database.AppDataBase
 import com.example.orgs.databinding.ActivityFormularioProdutoBinding
 import com.example.orgs.extensions.carregar
 import com.example.orgs.extensions.gerarImageLoader
-import com.example.orgs.extensions.getParcelableExtraCompat
+import com.example.orgs.extensions.getLongExtraCompact
 import com.example.orgs.model.Produto
 import com.example.orgs.ui.dialog.FormularioImagemDialog
 import com.google.android.material.textfield.TextInputEditText
@@ -20,10 +20,12 @@ class FormularioProdutoActivity : AppCompatActivity() {
     private val imageLoader by lazy {
         binding.activityFormularioProdutoImagem.gerarImageLoader(this)
     }
-    private var isEdit = false
+    private val produtoDAO by lazy {
+        AppDataBase.instancia(this).produtoDao()
+    }
 
     private var url: String? = null
-    private var idProduto = 0L
+    private var produtoId = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,16 +42,22 @@ class FormularioProdutoActivity : AppCompatActivity() {
     }
 
     private fun onEdit() {
-        getParcelableExtraCompat<Produto>(CHAVE_PRODUTO)?.let {
-            title = "Alterar produto"
-            isEdit = true
-            idProduto = it.id
-            url = it.imagem
+        produtoId = getLongExtraCompact(CHAVE_PRODUTO_ID)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        buscarProduto()
+    }
+
+    private fun buscarProduto() {
+        produtoDAO.listarPorId(produtoId)?.let {
             preencherFormularioEdicao(it)
         }
     }
 
     private fun preencherFormularioEdicao(produto: Produto) {
+        url = produto.imagem
         with(binding) {
             activityFormularioProdutoImagem.carregar(produto.imagem, imageLoader)
             activityFormularioProdutoNome.setText(produto.nome)
@@ -65,11 +73,7 @@ class FormularioProdutoActivity : AppCompatActivity() {
         botaoSalvar.setOnClickListener {
             if (!validarDado()) {
                 val produtoNovo = criarProduto()
-                if (!isEdit) {
-                    produtoDAO.adicionar(produtoNovo)
-                } else {
-                    produtoDAO.alterar(produtoNovo)
-                }
+                produtoDAO.adicionar(produtoNovo)
                 finish()
             }
         }
@@ -84,7 +88,7 @@ class FormularioProdutoActivity : AppCompatActivity() {
         val valorTexto = campoValor.text.toString()
         val valor = if (valorTexto.isBlank()) BigDecimal.ZERO else BigDecimal(valorTexto)
         return Produto(
-            id = idProduto,
+            id = produtoId,
             nome = nome,
             descricao = descricao,
             valor = valor,

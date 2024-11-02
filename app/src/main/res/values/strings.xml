@@ -8,4 +8,12 @@
     <string name="formulario_produto_error_valor">⚠️ O campo valor é obrigatório!</string>
     <string name="menu_detalhes_produto_botaoeditar">Editar</string>
     <string name="menu_detalhes_produto_botaoremover">Remover</string>
+    <string name="menu_lista_produtos_ordenar">Ordenar</string>
+    <string name="menu_lista_produtos_ordenar_nome_asc">Nome (ASC)</string>
+    <string name="menu_lista_produtos_ordenar_nome_desc">Nome (DESC)</string>
+    <string name="menu_lista_produtos_ordenar_descricao_desc">Descrição (DESC)</string>
+    <string name="menu_lista_produtos_ordenar_descricao_asc">Descrição (ASC)</string>
+    <string name="menu_lista_produtos_ordenar_valor_desc">Valor (DESC)</string>
+    <string name="menu_lista_produtos_ordenar_valor_asc">Valor (ASC)</string>
+    <string name="menu_lista_produtos_ordenar_sem_ordem">Sem ordem</string>
 </resources>

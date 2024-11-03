@@ -87,6 +87,26 @@ class ListaProdutosActivity : AppCompatActivity() {
     private fun configuraRecyclerView() {
         val recyclerView = binding.activityListaProdutosRecyclerView
         recyclerView.adapter = adapter
+        configurarItemClick()
+        configurarItemClickByHold()
+    }
+
+    private fun configurarItemClickByHold() {
+        adapter.itemClickByHoldEditar = {
+            Intent(this, FormularioProdutoActivity::class.java).apply {
+                putExtra(CHAVE_PRODUTO_ID, it.id)
+                startActivity(this)
+            }
+        }
+        adapter.itemClickByHoldRemover = {
+            it.let {
+                produtoDao.remover(it)
+                adapter.atualizar(produtoDao.listar())
+            }
+        }
+    }
+
+    private fun configurarItemClick() {
         adapter.itemClick = {
             val intent = Intent(this, DetalhesProdutoActivity::class.java).apply {
                 putExtra(CHAVE_PRODUTO_ID, it.id)

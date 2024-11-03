@@ -3,9 +3,12 @@ package com.example.orgs.ui.recyclerView.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
+import com.example.orgs.R
 import com.example.orgs.databinding.ProdutoItemBinding
 import com.example.orgs.extensions.carregar
 import com.example.orgs.extensions.gerarImageLoader
@@ -16,17 +19,37 @@ import com.example.orgs.model.Produto
 class ListaProdutosAdapter(
     private val context: Context,
     produtos: List<Produto> = emptyList(),
-    var itemClick: (produto: Produto) -> Unit = {}
+    var itemClick: (produto: Produto) -> Unit = {},
+    var itemClickByHoldEditar: (produto: Produto) -> Unit = {},
+    var itemClickByHoldRemover: (produto: Produto) -> Unit = {}
 ) : RecyclerView.Adapter<ListaProdutosAdapter.ViewHolder>() {
 
     private val dataset = produtos.toMutableList()
 
     inner class ViewHolder(private val binding: ProdutoItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+        RecyclerView.ViewHolder(binding.root), PopupMenu.OnMenuItemClickListener {
 
         private lateinit var produto: Produto
 
         init {
+            adicionarItemViewClick()
+            adicionarItemViewClickHolder()
+        }
+
+        private fun adicionarItemViewClickHolder() {
+            itemView.setOnLongClickListener {
+                PopupMenu(context, itemView).apply {
+                    menuInflater.inflate(
+                        R.menu.menu_detalhes_produto,
+                        menu
+                    )
+                    setOnMenuItemClickListener(this@ViewHolder)
+                }.show()
+                true
+            }
+        }
+
+        private fun adicionarItemViewClick() {
             itemView.setOnClickListener {
                 if (::produto.isInitialized) {
                     itemClick(produto)
@@ -49,6 +72,21 @@ class ListaProdutosAdapter(
                 View.GONE
             }
             binding.imageView.carregar(produto.imagem, imageLoader)
+        }
+
+        override fun onMenuItemClick(item: MenuItem?): Boolean {
+            item?.let {
+                when (it.itemId) {
+                    R.id.menu_detalhes_produto_editar -> {
+                        itemClickByHoldEditar(produto)
+                    }
+
+                    R.id.menu_detalhes_produto_remover -> {
+                        itemClickByHoldRemover(produto)
+                    }
+                }
+            }
+            return true
         }
     }
 

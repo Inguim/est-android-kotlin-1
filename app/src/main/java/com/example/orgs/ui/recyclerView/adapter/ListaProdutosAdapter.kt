@@ -84,9 +84,11 @@ class ListaProdutosAdapter(
                     R.id.menu_detalhes_produto_remover -> {
                         itemClickByHoldRemover(produto)
                     }
+
+                    else -> return false
                 }
-            }
-            return true
+                return true
+            } ?: return false
         }
     }
 

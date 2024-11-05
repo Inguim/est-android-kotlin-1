@@ -13,6 +13,11 @@ import com.example.orgs.extensions.gerarImageLoader
 import com.example.orgs.extensions.getLongExtraCompact
 import com.example.orgs.extensions.moedaBR
 import com.example.orgs.model.Produto
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DetalhesProdutoActivity : AppCompatActivity() {
     private var produtoId: Long = 0L
@@ -23,6 +28,7 @@ class DetalhesProdutoActivity : AppCompatActivity() {
     private val produtoDAO by lazy {
         AppDataBase.instancia(this).produtoDao()
     }
+    private val scope = CoroutineScope(IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,10 +43,16 @@ class DetalhesProdutoActivity : AppCompatActivity() {
     }
 
     private fun reloadProduto() {
-        produto = produtoDAO.listarPorId(produtoId)
-        produto?.let {
-            preencherView(it)
-        } ?: finish()
+        scope.launch {
+            produto = produtoDAO.listarPorId(produtoId)
+            // em alguns casos, quando precisar chamar a Activity fora da Threah principal o App
+            // pode quebrar, ao troca para o Main dnv, evitará o erro
+            withContext(Main) {
+                produto?.let {
+                    preencherView(it)
+                } ?: finish()
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -58,8 +70,10 @@ class DetalhesProdutoActivity : AppCompatActivity() {
             }
 
             R.id.menu_detalhes_produto_remover -> {
-                produto?.let { produtoDAO.remover(it) }
-                finish()
+                scope.launch {
+                    produto?.let { produtoDAO.remover(it) }
+                    finish()
+                }
             }
         }
         return super.onOptionsItemSelected(item)

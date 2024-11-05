@@ -11,6 +11,11 @@ import com.example.orgs.extensions.getLongExtraCompact
 import com.example.orgs.model.Produto
 import com.example.orgs.ui.dialog.FormularioImagemDialog
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 
 class FormularioProdutoActivity : AppCompatActivity() {
@@ -23,6 +28,7 @@ class FormularioProdutoActivity : AppCompatActivity() {
     private val produtoDAO by lazy {
         AppDataBase.instancia(this).produtoDao()
     }
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     private var url: String? = null
     private var produtoId = 0L
@@ -51,8 +57,13 @@ class FormularioProdutoActivity : AppCompatActivity() {
     }
 
     private fun buscarProduto() {
-        produtoDAO.listarPorId(produtoId)?.let {
-            preencherFormularioEdicao(it)
+        scope.launch {
+            val produto = produtoDAO.listarPorId(produtoId)
+            withContext(Main) {
+                if (produto != null) {
+                    preencherFormularioEdicao(produto)
+                }
+            }
         }
     }
 
@@ -73,8 +84,10 @@ class FormularioProdutoActivity : AppCompatActivity() {
         botaoSalvar.setOnClickListener {
             if (!validarDado()) {
                 val produtoNovo = criarProduto()
-                produtoDAO.adicionar(produtoNovo)
-                finish()
+                scope.launch {
+                    produtoDAO.adicionar(produtoNovo)
+                    finish()
+                }
             }
         }
     }

@@ -11,6 +11,11 @@ import com.example.orgs.database.OrdenacaoProdutos
 import com.example.orgs.databinding.ActivityListaProdutosBinding
 import com.example.orgs.model.Produto
 import com.example.orgs.ui.recyclerView.adapter.ListaProdutosAdapter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ListaProdutosActivity : AppCompatActivity() {
     private val adapter = ListaProdutosAdapter(context = this)
@@ -21,6 +26,8 @@ class ListaProdutosActivity : AppCompatActivity() {
         val db = AppDataBase.instancia(this)
         db.produtoDao()
     }
+    // Chama uma scopo de coroutine para não travar a UI
+    private val scope = MainScope()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +38,14 @@ class ListaProdutosActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        adapter.atualizar(produtoDao.listar())
+        // Inicia uma coroutine (ainda continua na Thread principal)
+        scope.launch {
+            // Define que ira executar em uma Thread nova (IO) fora da main
+            val produtos = withContext(IO) {
+                produtoDao.listar()
+            }
+            adapter.atualizar(produtos)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -45,31 +59,35 @@ class ListaProdutosActivity : AppCompatActivity() {
     }
 
     private fun ordenarProdutos(item: MenuItem) {
-        val produtosOrdenado: List<Produto>? = when (item.itemId) {
-            R.id.menu_lista_produtos_ordenar_nome_asc ->
-                produtoDao.listar()
+        scope.launch {
+            val produtosOrdenado: List<Produto>? = withContext(IO) {
+                when (item.itemId) {
+                    R.id.menu_lista_produtos_ordenar_nome_asc ->
+                        produtoDao.listar()
 
-            R.id.menu_lista_produtos_ordenar_nome_desc ->
-                produtoDao.listar(OrdenacaoProdutos.NOME_DESC.order)
+                    R.id.menu_lista_produtos_ordenar_nome_desc ->
+                        produtoDao.listar(OrdenacaoProdutos.NOME_DESC.order)
 
-            R.id.menu_lista_produtos_ordenar_descricao_asc ->
-                produtoDao.listar(OrdenacaoProdutos.DESCRICAO_ASC.order)
+                    R.id.menu_lista_produtos_ordenar_descricao_asc ->
+                        produtoDao.listar(OrdenacaoProdutos.DESCRICAO_ASC.order)
 
-            R.id.menu_lista_produtos_ordenar_descricao_desc ->
-                produtoDao.listar(OrdenacaoProdutos.DESCRICAO_DESC.order)
+                    R.id.menu_lista_produtos_ordenar_descricao_desc ->
+                        produtoDao.listar(OrdenacaoProdutos.DESCRICAO_DESC.order)
 
-            R.id.menu_lista_produtos_ordenar_valor_asc ->
-                produtoDao.listar(OrdenacaoProdutos.VALOR_ASC.order)
+                    R.id.menu_lista_produtos_ordenar_valor_asc ->
+                        produtoDao.listar(OrdenacaoProdutos.VALOR_ASC.order)
 
-            R.id.menu_lista_produtos_ordenar_valor_desc ->
-                produtoDao.listar(OrdenacaoProdutos.VALOR_DESC.order)
+                    R.id.menu_lista_produtos_ordenar_valor_desc ->
+                        produtoDao.listar(OrdenacaoProdutos.VALOR_DESC.order)
 
-            R.id.menu_lista_produtos_ordenar_sem_ordem ->
-                produtoDao.listar()
+                    R.id.menu_lista_produtos_ordenar_sem_ordem ->
+                        produtoDao.listar()
 
-            else -> null
+                    else -> null
+                }
+            }
+            produtosOrdenado?.let { adapter.atualizar(it) }
         }
-        produtosOrdenado?.let { adapter.atualizar(it) }
     }
 
     private fun configuraFab() {
@@ -100,8 +118,13 @@ class ListaProdutosActivity : AppCompatActivity() {
         }
         adapter.itemClickByHoldRemover = {
             it.let {
-                produtoDao.remover(it)
-                adapter.atualizar(produtoDao.listar())
+                scope.launch {
+                    val produtos = withContext(IO) {
+                        produtoDao.remover(it)
+                        return@withContext produtoDao.listar()
+                    }
+                    adapter.atualizar(produtos)
+                }
             }
         }
     }

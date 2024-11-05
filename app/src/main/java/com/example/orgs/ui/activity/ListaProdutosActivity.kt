@@ -11,7 +11,6 @@ import com.example.orgs.database.OrdenacaoProdutos
 import com.example.orgs.databinding.ActivityListaProdutosBinding
 import com.example.orgs.model.Produto
 import com.example.orgs.ui.recyclerView.adapter.ListaProdutosAdapter
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -26,6 +25,7 @@ class ListaProdutosActivity : AppCompatActivity() {
         val db = AppDataBase.instancia(this)
         db.produtoDao()
     }
+
     // Chama uma scopo de coroutine para não travar a UI
     private val scope = MainScope()
 

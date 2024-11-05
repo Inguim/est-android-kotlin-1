@@ -2,6 +2,7 @@ package com.example.orgs.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +12,7 @@ import com.example.orgs.database.OrdenacaoProdutos
 import com.example.orgs.databinding.ActivityListaProdutosBinding
 import com.example.orgs.model.Produto
 import com.example.orgs.ui.recyclerView.adapter.ListaProdutosAdapter
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -38,14 +40,20 @@ class ListaProdutosActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        // Exemplo de como implementar try catch in coroutines
+        val handler = CoroutineExceptionHandler { coroutineContext, throwable ->
+            Log.i("TAG", "onResume: throwable ${throwable}")
+        }
         // Inicia uma coroutine (ainda continua na Thread principal)
-        scope.launch {
+        scope.launch(handler) {
             // Define que ira executar em uma Thread nova (IO) fora da main
             val produtos = withContext(IO) {
                 produtoDao.listar()
             }
             adapter.atualizar(produtos)
+
         }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

@@ -11,6 +11,10 @@ import com.example.orgs.database.OrdenacaoProdutos
 import com.example.orgs.databinding.ActivityListaProdutosBinding
 import com.example.orgs.model.Produto
 import com.example.orgs.ui.recyclerView.adapter.ListaProdutosAdapter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ListaProdutosActivity : AppCompatActivity() {
     private val adapter = ListaProdutosAdapter(context = this)
@@ -21,6 +25,8 @@ class ListaProdutosActivity : AppCompatActivity() {
         val db = AppDataBase.instancia(this)
         db.produtoDao()
     }
+    // Chama uma scopo de coroutine para não travar a UI
+    private val scope = MainScope()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +37,14 @@ class ListaProdutosActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        adapter.atualizar(produtoDao.listar())
+        // Inicia uma coroutine (ainda continua na Thread principal)
+        scope.launch {
+            // Define que ira executar em uma Thread nova (IO) fora da main
+            val produtos = withContext(Dispatchers.IO) {
+                produtoDao.listar()
+            }
+            adapter.atualizar(produtos)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -100,8 +113,13 @@ class ListaProdutosActivity : AppCompatActivity() {
         }
         adapter.itemClickByHoldRemover = {
             it.let {
-                produtoDao.remover(it)
-                adapter.atualizar(produtoDao.listar())
+                scope.launch {
+                    val produtos = withContext(Dispatchers.IO) {
+                        produtoDao.remover(it)
+                        return@withContext produtoDao.listar()
+                    }
+                    adapter.atualizar(produtos)
+                }
             }
         }
     }

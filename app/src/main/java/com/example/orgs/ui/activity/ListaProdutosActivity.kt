@@ -14,6 +14,7 @@ import com.example.orgs.model.Produto
 import com.example.orgs.ui.recyclerView.adapter.ListaProdutosAdapter
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -28,8 +29,8 @@ class ListaProdutosActivity : AppCompatActivity() {
         db.produtoDao()
     }
 
-    // Chama uma scopo de coroutine para não travar a UI
     private val scope = MainScope()
+    private val job = Job()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,20 +41,15 @@ class ListaProdutosActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Exemplo de como implementar try catch in coroutines
         val handler = CoroutineExceptionHandler { coroutineContext, throwable ->
             Log.i("TAG", "onResume: throwable ${throwable}")
         }
-        // Inicia uma coroutine (ainda continua na Thread principal)
-        scope.launch(handler) {
-            // Define que ira executar em uma Thread nova (IO) fora da main
+        scope.launch(job + handler) {
             val produtos = withContext(IO) {
                 produtoDao.listar()
             }
             adapter.atualizar(produtos)
-
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -64,6 +60,12 @@ class ListaProdutosActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         ordenarProdutos(item)
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Cancela a coroutine caso a Activity seja destruida
+        job.cancel()
     }
 
     private fun ordenarProdutos(item: MenuItem) {

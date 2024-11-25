@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import java.math.BigDecimal
 
-// Necessário para permitir enviar um dado entre Activities
 @Entity
 @Parcelize
 data class Produto(

@@ -15,7 +15,6 @@ import com.example.orgs.extensions.gerarImageLoader
 import com.example.orgs.extensions.moedaBR
 import com.example.orgs.model.Produto
 
-// RecyclerView: responsável por exibir informações em lista
 class ListaProdutosAdapter(
     private val context: Context,
     produtos: List<Produto> = emptyList(),
@@ -92,20 +91,17 @@ class ListaProdutosAdapter(
         }
     }
 
-    // Responsável por criar a View e efetuar o processo de "Bind" (vinculação de dado e ui)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(context)
         val binding = ProdutoItemBinding.inflate(inflater, parent, false)
         return ViewHolder(binding)
     }
 
-    // Indica o item, posição e o ViewHolder que do mesmo
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val produto = dataset[position]
         holder.vincula(produto)
     }
 
-    // Representa a quantidade de items que o mesmo irá representar
     override fun getItemCount(): Int = dataset.size
 
     @SuppressLint("NotifyDataSetChanged")

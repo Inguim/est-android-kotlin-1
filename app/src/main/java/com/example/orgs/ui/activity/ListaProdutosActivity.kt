@@ -5,12 +5,15 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.orgs.R
 import com.example.orgs.database.AppDataBase
 import com.example.orgs.database.OrdenacaoProdutos
 import com.example.orgs.databinding.ActivityListaProdutosBinding
 import com.example.orgs.model.Produto
 import com.example.orgs.ui.recyclerView.adapter.ListaProdutosAdapter
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 class ListaProdutosActivity : AppCompatActivity() {
     private val adapter = ListaProdutosAdapter(context = this)
@@ -31,7 +34,15 @@ class ListaProdutosActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        adapter.atualizar(produtoDao.listar())
+        lifecycleScope.launch {
+            buscarProdutos()
+        }
+    }
+
+    private suspend fun buscarProdutos() {
+        produtoDao.listar().collect { produtos ->
+            adapter.atualizar(produtos)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -45,7 +56,7 @@ class ListaProdutosActivity : AppCompatActivity() {
     }
 
     private fun ordenarProdutos(item: MenuItem) {
-        val produtosOrdenado: List<Produto>? = when (item.itemId) {
+        val produtosOrdenado: Flow<List<Produto>>? = when (item.itemId) {
             R.id.menu_lista_produtos_ordenar_nome_asc ->
                 produtoDao.listar()
 
@@ -69,7 +80,13 @@ class ListaProdutosActivity : AppCompatActivity() {
 
             else -> null
         }
-        produtosOrdenado?.let { adapter.atualizar(it) }
+        produtosOrdenado?.let {
+            lifecycleScope.launch {
+                it.collect { produtos ->
+                    adapter.atualizar(produtos)
+                }
+            }
+        }
     }
 
     private fun configuraFab() {
@@ -100,8 +117,10 @@ class ListaProdutosActivity : AppCompatActivity() {
         }
         adapter.itemClickByHoldRemover = {
             it.let {
-                produtoDao.remover(it)
-                adapter.atualizar(produtoDao.listar())
+                lifecycleScope.launch {
+                    produtoDao.remover(it)
+                    buscarProdutos()
+                }
             }
         }
     }

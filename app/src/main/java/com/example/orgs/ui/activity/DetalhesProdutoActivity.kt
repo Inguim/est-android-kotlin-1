@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.orgs.R
 import com.example.orgs.database.AppDataBase
 import com.example.orgs.databinding.ActivityDetalhesProdutoBinding
@@ -13,6 +14,7 @@ import com.example.orgs.extensions.gerarImageLoader
 import com.example.orgs.extensions.getLongExtraCompact
 import com.example.orgs.extensions.moedaBR
 import com.example.orgs.model.Produto
+import kotlinx.coroutines.launch
 
 class DetalhesProdutoActivity : AppCompatActivity() {
     private var produtoId: Long = 0L
@@ -37,10 +39,14 @@ class DetalhesProdutoActivity : AppCompatActivity() {
     }
 
     private fun reloadProduto() {
-        produto = produtoDAO.listarPorId(produtoId)
-        produto?.let {
-            preencherView(it)
-        } ?: finish()
+        lifecycleScope.launch {
+            produtoDAO.listarPorId(produtoId).collect {
+                produto = it
+                produto?.let {
+                    preencherView(it)
+                } ?: finish()
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -58,7 +64,11 @@ class DetalhesProdutoActivity : AppCompatActivity() {
             }
 
             R.id.menu_detalhes_produto_remover -> {
-                produto?.let { produtoDAO.remover(it) }
+                produto?.let {
+                    lifecycleScope.launch {
+                        produtoDAO.remover(it)
+                    }
+                }
                 finish()
             }
         }

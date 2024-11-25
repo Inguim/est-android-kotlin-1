@@ -2,6 +2,7 @@ package com.example.orgs.ui.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.orgs.R
 import com.example.orgs.database.AppDataBase
 import com.example.orgs.databinding.ActivityFormularioProdutoBinding
@@ -11,6 +12,7 @@ import com.example.orgs.extensions.getLongExtraCompact
 import com.example.orgs.model.Produto
 import com.example.orgs.ui.dialog.FormularioImagemDialog
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 class FormularioProdutoActivity : AppCompatActivity() {
@@ -51,8 +53,12 @@ class FormularioProdutoActivity : AppCompatActivity() {
     }
 
     private fun buscarProduto() {
-        produtoDAO.listarPorId(produtoId)?.let {
-            preencherFormularioEdicao(it)
+        lifecycleScope.launch {
+            produtoDAO.listarPorId(produtoId).collect {
+                it?.let { produto ->
+                    preencherFormularioEdicao(produto)
+                }
+            }
         }
     }
 
@@ -68,13 +74,13 @@ class FormularioProdutoActivity : AppCompatActivity() {
 
     private fun configurarBotaoSalvar() {
         val botaoSalvar = binding.activityFormularioProdutoBotaoSalvar
-        val db = AppDataBase.instancia(this)
-        val produtoDAO = db.produtoDao()
         botaoSalvar.setOnClickListener {
             if (!validarDado()) {
-                val produtoNovo = criarProduto()
-                produtoDAO.adicionar(produtoNovo)
-                finish()
+                lifecycleScope.launch {
+                    val produtoNovo = criarProduto()
+                    produtoDAO.adicionar(produtoNovo)
+                    finish()
+                }
             }
         }
     }

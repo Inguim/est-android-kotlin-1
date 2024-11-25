@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.orgs.database.OrdenacaoProdutos
 import com.example.orgs.model.Produto
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProdutoDAO {
@@ -19,22 +20,14 @@ interface ProdutoDAO {
                 "        CASE WHEN :ordem = 'valor ASC' THEN valor END ASC, " +
                 "        CASE WHEN :ordem = 'valor DESC' THEN valor END DESC"
     )
-    fun listar(ordem: String? = OrdenacaoProdutos.NOME_ASC.order): List<Produto>
-
-//    @Insert
-//    fun adicionar(vararg produto: Produto)
+    fun listar(ordem: String? = OrdenacaoProdutos.NOME_ASC.order): Flow<List<Produto>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    // Executa uma edição caso ja exista
-    fun adicionar(vararg produto: Produto)
+    suspend fun adicionar(produto: Produto)
 
     @Delete
-    fun remover(produto: Produto)
-
-//    @Update
-//    fun alterar(produto: Produto)
+    suspend fun remover(produto: Produto)
 
     @Query("SELECT * FROM Produto WHERE id = :id")
-    fun listarPorId(id: Long): Produto?
-
+    fun listarPorId(id: Long): Flow<Produto?>
 }

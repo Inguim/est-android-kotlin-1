@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.orgs.R
 import com.example.orgs.database.AppDataBase
@@ -13,9 +12,10 @@ import com.example.orgs.databinding.ActivityListaProdutosBinding
 import com.example.orgs.model.Produto
 import com.example.orgs.ui.recyclerView.adapter.ListaProdutosAdapter
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
-class ListaProdutosActivity : AppCompatActivity() {
+class ListaProdutosActivity : UsuarioBaseActivity() {
     private val adapter = ListaProdutosAdapter(context = this)
     private val binding by lazy {
         ActivityListaProdutosBinding.inflate(layoutInflater)
@@ -35,13 +35,19 @@ class ListaProdutosActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         lifecycleScope.launch {
-            buscarProdutos()
+            launch {
+                ordenacao.filterNotNull().collect {
+                    buscarProdutos()
+                }
+            }
         }
     }
 
     private suspend fun buscarProdutos() {
-        produtoDao.listar().collect { produtos ->
-            adapter.atualizar(produtos)
+        ordenacao.collect {
+            produtoDao.listar(it).collect { produtos ->
+                adapter.atualizar(produtos)
+            }
         }
     }
 
@@ -56,34 +62,38 @@ class ListaProdutosActivity : AppCompatActivity() {
     }
 
     private fun ordenarProdutos(item: MenuItem) {
-        val produtosOrdenado: Flow<List<Produto>>? = when (item.itemId) {
+        val novaOrdem: OrdenacaoProdutos? = when (item.itemId) {
             R.id.menu_lista_produtos_ordenar_nome_asc ->
-                produtoDao.listar()
+                OrdenacaoProdutos.NOME_ASC
 
             R.id.menu_lista_produtos_ordenar_nome_desc ->
-                produtoDao.listar(OrdenacaoProdutos.NOME_DESC.order)
+                OrdenacaoProdutos.NOME_DESC
 
             R.id.menu_lista_produtos_ordenar_descricao_asc ->
-                produtoDao.listar(OrdenacaoProdutos.DESCRICAO_ASC.order)
+                OrdenacaoProdutos.DESCRICAO_ASC
 
             R.id.menu_lista_produtos_ordenar_descricao_desc ->
-                produtoDao.listar(OrdenacaoProdutos.DESCRICAO_DESC.order)
+                OrdenacaoProdutos.DESCRICAO_DESC
 
             R.id.menu_lista_produtos_ordenar_valor_asc ->
-                produtoDao.listar(OrdenacaoProdutos.VALOR_ASC.order)
+                OrdenacaoProdutos.VALOR_ASC
 
             R.id.menu_lista_produtos_ordenar_valor_desc ->
-                produtoDao.listar(OrdenacaoProdutos.VALOR_DESC.order)
+                OrdenacaoProdutos.VALOR_DESC
 
             R.id.menu_lista_produtos_ordenar_sem_ordem ->
-                produtoDao.listar()
+                OrdenacaoProdutos.NOME_ASC
 
             else -> null
         }
-        produtosOrdenado?.let {
-            lifecycleScope.launch {
-                it.collect { produtos ->
-                    adapter.atualizar(produtos)
+        novaOrdem?.let {
+            val produtosOrdenado: Flow<List<Produto>> = produtoDao.listar(novaOrdem.order)
+            produtosOrdenado.let {
+                lifecycleScope.launch {
+                    atualizarPreferenciaOrdenacao(novaOrdem)
+                    it.collect { produtos ->
+                        adapter.atualizar(produtos)
+                    }
                 }
             }
         }

@@ -23,7 +23,7 @@ interface ProdutoDAO {
     fun listar(ordem: String? = OrdenacaoProdutos.NOME_ASC.order): Flow<List<Produto>>
 
     @Query(
-        "SELECT * FROM Produto WHERE usuarioId = :usuarioId OR usuarioId IS NULL ORDER BY " +
+        "SELECT * FROM Produto WHERE usuarioId = :usuarioId ORDER BY " +
                 "CASE WHEN :ordem = 'nome ASC' THEN nome END ASC, " +
                 "        CASE WHEN :ordem = 'nome DESC' THEN nome END DESC, " +
                 "        CASE WHEN :ordem = 'descricao ASC' THEN descricao END ASC, " +

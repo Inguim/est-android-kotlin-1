@@ -18,4 +18,5 @@
     <color name="red">#BC3C3C</color>
 
     <color name="colorBackground">#ffffff</color>
+    <color name="colorMenuItemSelectd">#000ed9</color>
 </resources>

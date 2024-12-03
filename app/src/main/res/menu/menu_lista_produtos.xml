@@ -11,7 +11,8 @@
             <item
                 android:id="@+id/menu_lista_produtos_ordenar_nome_desc"
                 android:title="@string/menu_lista_produtos_ordenar_nome_desc"
-                android:icon="@drawable/ic_action_sortdesc"/>
+                android:icon="@drawable/ic_action_sortdesc"
+                />
             <item
                 android:id="@+id/menu_lista_produtos_ordenar_nome_asc"
                 android:title="@string/menu_lista_produtos_ordenar_nome_asc"

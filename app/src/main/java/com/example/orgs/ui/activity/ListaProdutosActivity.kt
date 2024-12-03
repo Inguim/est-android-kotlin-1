@@ -9,6 +9,7 @@ import com.example.orgs.R
 import com.example.orgs.database.AppDataBase
 import com.example.orgs.database.OrdenacaoProdutos
 import com.example.orgs.databinding.ActivityListaProdutosBinding
+import com.example.orgs.extensions.setTitleColor
 import com.example.orgs.model.Produto
 import com.example.orgs.ui.recyclerView.adapter.ListaProdutosAdapter
 import kotlinx.coroutines.flow.Flow
@@ -24,6 +25,7 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
         val db = AppDataBase.instancia(this)
         db.produtoDao()
     }
+    private var menuSelecionado: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,6 +75,20 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        indicarMenuSelecionado(menu)
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    private fun indicarMenuSelecionado(menu: Menu?) {
+        menu?.let {
+            menuSelecionado?.let {
+                val item: MenuItem = menu.findItem(it)
+                item.setTitleColor(this, R.color.colorMenuItemSelectd)
+            }
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId != R.id.menu_lista_produtos_deslogar) {
             ordenarProdutos(item)
@@ -85,6 +101,7 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
     }
 
     private fun ordenarProdutos(item: MenuItem) {
+        menuSelecionado = item.itemId
         val novaOrdem: OrdenacaoProdutos? = when (item.itemId) {
             R.id.menu_lista_produtos_ordenar_nome_asc ->
                 OrdenacaoProdutos.NOME_ASC
@@ -121,6 +138,7 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
                 }
             }
         }
+        invalidateOptionsMenu()
     }
 
     private fun configuraFab() {

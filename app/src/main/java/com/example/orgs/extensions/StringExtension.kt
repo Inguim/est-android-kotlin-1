@@ -1,5 +1,8 @@
 package com.example.orgs.extensions
 
+import android.os.Build
+import android.text.Html
+import android.text.Spanned
 import java.security.MessageDigest
 
 fun String.toHash(
@@ -11,4 +14,12 @@ fun String.toHash(
         .fold("") { str, byte ->
             str + "%02x".format(byte)
         }
+}
+
+fun String.parseAsHtml(): Spanned {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        Html.fromHtml(this, Html.FROM_HTML_MODE_LEGACY)
+    } else {
+        Html.fromHtml(this)
+    }
 }

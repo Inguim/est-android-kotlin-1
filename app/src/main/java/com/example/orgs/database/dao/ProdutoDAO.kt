@@ -22,6 +22,17 @@ interface ProdutoDAO {
     )
     fun listar(ordem: String? = OrdenacaoProdutos.NOME_ASC.order): Flow<List<Produto>>
 
+    @Query(
+        "SELECT * FROM Produto WHERE usuarioId = :usuarioId OR usuarioId IS NULL ORDER BY " +
+                "CASE WHEN :ordem = 'nome ASC' THEN nome END ASC, " +
+                "        CASE WHEN :ordem = 'nome DESC' THEN nome END DESC, " +
+                "        CASE WHEN :ordem = 'descricao ASC' THEN descricao END ASC, " +
+                "        CASE WHEN :ordem = 'descricao DESC' THEN descricao END DESC, " +
+                "        CASE WHEN :ordem = 'valor ASC' THEN valor END ASC, " +
+                "        CASE WHEN :ordem = 'valor DESC' THEN valor END DESC"
+    )
+    fun listarPorUsuario(usuarioId: String, ordem: String? = OrdenacaoProdutos.NOME_ASC.order): Flow<List<Produto>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun adicionar(produto: Produto)
 

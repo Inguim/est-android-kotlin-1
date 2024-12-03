@@ -1,7 +1,6 @@
 package com.example.orgs.ui.activity
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.orgs.R
 import com.example.orgs.database.AppDataBase
@@ -15,7 +14,7 @@ import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
-class FormularioProdutoActivity : AppCompatActivity() {
+class FormularioProdutoActivity : UsuarioBaseActivity() {
     private val binding by lazy {
         ActivityFormularioProdutoBinding.inflate(layoutInflater)
     }
@@ -77,15 +76,17 @@ class FormularioProdutoActivity : AppCompatActivity() {
         botaoSalvar.setOnClickListener {
             if (!validarDado()) {
                 lifecycleScope.launch {
-                    val produtoNovo = criarProduto()
-                    produtoDAO.adicionar(produtoNovo)
-                    finish()
+                    usuario.value?.let { usuario ->
+                        val produtoNovo = criarProduto(usuario.id)
+                        produtoDAO.adicionar(produtoNovo)
+                        finish()
+                    }
                 }
             }
         }
     }
 
-    private fun criarProduto(): Produto {
+    private fun criarProduto(usuarioId: String): Produto {
         val campoNome = binding.activityFormularioProdutoNome
         val nome = campoNome.text.toString()
         val campoDescricao = binding.activityFormularioProdutoDescricao
@@ -98,7 +99,8 @@ class FormularioProdutoActivity : AppCompatActivity() {
             nome = nome,
             descricao = descricao,
             valor = valor,
-            imagem = url
+            imagem = url,
+            usuarioId = usuarioId
         )
     }
 

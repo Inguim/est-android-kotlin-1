@@ -9,6 +9,7 @@ import com.example.orgs.R
 import com.example.orgs.database.AppDataBase
 import com.example.orgs.database.OrdenacaoProdutos
 import com.example.orgs.databinding.ActivityListaProdutosBinding
+import com.example.orgs.extensions.setIconColor
 import com.example.orgs.extensions.setTitleColor
 import com.example.orgs.model.Produto
 import com.example.orgs.ui.recyclerView.adapter.ListaProdutosAdapter
@@ -83,8 +84,13 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
     private fun indicarMenuSelecionado(menu: Menu?) {
         menu?.let {
             menuSelecionado?.let {
-                val item: MenuItem = menu.findItem(it)
-                item.setTitleColor(this, R.color.colorMenuItemSelectd)
+                val itemOredenacao: MenuItem = menu.findItem(it)
+                itemOredenacao.setIconColor(this, R.color.colorMenuItemSelected)
+                itemOredenacao.setTitleColor(this, R.color.colorMenuItemSelected)
+                if (itemOredenacao.itemId != R.id.menu_lista_produtos_ordenar_sem_ordem) {
+                    val menuOrdenacao = menu.findItem(R.id.menu_lista_produtos_ordenar)
+                    menuOrdenacao.setIconColor(this, R.color.colorMenuItemSelected)
+                }
             }
         }
     }
@@ -101,7 +107,6 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
     }
 
     private fun ordenarProdutos(item: MenuItem) {
-        menuSelecionado = item.itemId
         val novaOrdem: OrdenacaoProdutos? = when (item.itemId) {
             R.id.menu_lista_produtos_ordenar_nome_asc ->
                 OrdenacaoProdutos.NOME_ASC
@@ -127,6 +132,7 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
             else -> null
         }
         novaOrdem?.let {
+            menuSelecionado = item.itemId
             val produtosOrdenado: Flow<List<Produto>> =
                 produtoDao.listarPorUsuario(usuario.value!!.id, novaOrdem.order)
             produtosOrdenado.let {

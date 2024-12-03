@@ -9,6 +9,8 @@
     <string name="formulario_usuario_error_nome">⚠️ O campo nome é obrigatório!</string>
     <string name="formulario_usuario_error_usuario">⚠️ O campo usuário é obrigatório!</string>
     <string name="formulario_usuario_error_senha">⚠️ O campo senha é obrigatório e deve ter mais de 6 caractéres!</string>
+    <string name="login_usuario_error_usuario">⚠️ O campo usuário é obrigatório!</string>
+    <string name="login_usuario_error_senha">⚠️ O campo senha é obrigatório e deve ter mais de 6 caractéres!</string>
     <string name="menu_detalhes_produto_botaoeditar">Editar</string>
     <string name="menu_detalhes_produto_botaoremover">Remover</string>
     <string name="menu_lista_produtos_ordenar">Ordenar</string>
@@ -23,4 +25,9 @@
     <string name="formulario_usuario_nome">Nome *</string>
     <string name="formulario_usuario_senha">Senha *</string>
     <string name="formulario_usuario_botao_cadastrar">Cadastrar</string>
+    <string name="login_usuario">Usuário *</string>
+    <string name="login_senha">Senha *</string>
+    <string name="login_entrar">Entrar</string>
+    <string name="login_cadastrar_usuario">cadastrar usuário</string>
+    <string name="menu_lista_produtos_deslogar">Deslogar</string>
 </resources>

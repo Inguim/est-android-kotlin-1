@@ -17,6 +17,9 @@
         <activity
             android:name=".ui.activity.FormularioCadastroUsuarioActivity"
             android:label="Cadastrar usuário" />
+        <activity
+            android:name=".ui.activity.LoginActivity"
+            android:theme="@style/Theme.Orgs.NoActionBar" />
         <activity android:name=".ui.activity.DetalhesProdutoActivity" />
         <activity
             android:name=".ui.activity.FormularioProdutoActivity"

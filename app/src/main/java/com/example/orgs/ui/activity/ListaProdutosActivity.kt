@@ -57,7 +57,13 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        ordenarProdutos(item)
+        if (item.itemId != R.id.menu_lista_produtos_deslogar) {
+            ordenarProdutos(item)
+        } else {
+            lifecycleScope.launch {
+                deslogaUsuario()
+            }
+        }
         return super.onOptionsItemSelected(item)
     }
 

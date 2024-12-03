@@ -41,4 +41,9 @@
                 />
         </menu>
     </item>
+    <item
+        android:id="@+id/menu_lista_produtos_deslogar"
+        android:icon="@drawable/ic_action_logout"
+        android:title="@string/menu_lista_produtos_deslogar"
+        app:showAsAction="always" />
 </menu>

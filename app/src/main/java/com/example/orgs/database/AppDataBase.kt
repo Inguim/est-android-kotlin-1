@@ -7,15 +7,17 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.orgs.database.converter.Converters
 import com.example.orgs.database.dao.ProdutoDAO
+import com.example.orgs.database.dao.UsuarioDAO
 import com.example.orgs.model.Produto
+import com.example.orgs.model.Usuario
 
-@Database(entities = [Produto::class], version = 1, exportSchema = false)
+@Database(entities = [Produto::class, Usuario::class], version = 3, exportSchema = true)
 @TypeConverters(Converters::class)
 abstract class AppDataBase : RoomDatabase() {
     abstract fun produtoDao(): ProdutoDAO
+    abstract fun usuarioDao(): UsuarioDAO
 
     companion object {
-        // Técnica para evitar a criação de varias instancias do banco de dados
         @Volatile
         private lateinit var db: AppDataBase
 
@@ -25,9 +27,12 @@ abstract class AppDataBase : RoomDatabase() {
                 context,
                 AppDataBase::class.java,
                 "orgs.db"
+            ).addMigrations(
+                MIGRATION_1_2,
+                MIGRATION_2_3
             ).build().also {
-                    db = it
-                }
+                db = it
+            }
         }
     }
 }

@@ -6,6 +6,9 @@
     <string name="formulario_produto_error_nome">⚠️ O campo nome é obrigatório!</string>
     <string name="formulario_produto_error_descricao">⚠️ O campo descrição é obrigatório!</string>
     <string name="formulario_produto_error_valor">⚠️ O campo valor é obrigatório!</string>
+    <string name="formulario_usuario_error_nome">⚠️ O campo nome é obrigatório!</string>
+    <string name="formulario_usuario_error_usuario">⚠️ O campo usuário é obrigatório!</string>
+    <string name="formulario_usuario_error_senha">⚠️ O campo senha é obrigatório e deve ter mais de 6 caractéres!</string>
     <string name="menu_detalhes_produto_botaoeditar">Editar</string>
     <string name="menu_detalhes_produto_botaoremover">Remover</string>
     <string name="menu_lista_produtos_ordenar">Ordenar</string>
@@ -16,4 +19,8 @@
     <string name="menu_lista_produtos_ordenar_valor_desc">Valor (DESC)</string>
     <string name="menu_lista_produtos_ordenar_valor_asc">Valor (ASC)</string>
     <string name="menu_lista_produtos_ordenar_sem_ordem">Sem ordem</string>
+    <string name="formulario_usuario_usuario">Usuário *</string>
+    <string name="formulario_usuario_nome">Nome *</string>
+    <string name="formulario_usuario_senha">Senha *</string>
+    <string name="formulario_usuario_botao_cadastrar">Cadastrar</string>
 </resources>

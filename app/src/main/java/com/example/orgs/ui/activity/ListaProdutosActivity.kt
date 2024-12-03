@@ -30,6 +30,13 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
         setContentView(binding.root)
         configuraRecyclerView()
         configuraFab()
+        lifecycleScope.launch {
+            launch {
+                usuario.filterNotNull().collect {
+                    title = "${getString(R.string.app_name)} (${it.nome})"
+                }
+            }
+        }
     }
 
     override fun onResume() {
@@ -44,9 +51,11 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
     }
 
     private suspend fun buscarProdutos() {
-        ordenacao.collect {
-            produtoDao.listar(it).collect { produtos ->
-                adapter.atualizar(produtos)
+        usuario.filterNotNull().collect { usuario ->
+            ordenacao.collect {
+                produtoDao.listarPorUsuario(usuario.id, it).collect { produtos ->
+                    adapter.atualizar(produtos)
+                }
             }
         }
     }
@@ -93,7 +102,7 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
             else -> null
         }
         novaOrdem?.let {
-            val produtosOrdenado: Flow<List<Produto>> = produtoDao.listar(novaOrdem.order)
+            val produtosOrdenado: Flow<List<Produto>> = produtoDao.listarPorUsuario(usuario.value!!.id, novaOrdem.order)
             produtosOrdenado.let {
                 lifecycleScope.launch {
                     atualizarPreferenciaOrdenacao(novaOrdem)

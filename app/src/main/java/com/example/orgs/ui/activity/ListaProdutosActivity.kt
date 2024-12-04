@@ -84,10 +84,10 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
     private fun indicarMenuSelecionado(menu: Menu?) {
         menu?.let {
             menuSelecionado?.let {
-                val itemOredenacao: MenuItem = menu.findItem(it)
-                itemOredenacao.setIconColor(this, R.color.colorMenuItemSelected)
-                itemOredenacao.setTitleColor(this, R.color.colorMenuItemSelected)
-                if (itemOredenacao.itemId != R.id.menu_lista_produtos_ordenar_sem_ordem) {
+                val itemOrdenacao: MenuItem = menu.findItem(it)
+                itemOrdenacao.setIconColor(this, R.color.colorMenuItemSelected)
+                itemOrdenacao.setTitleColor(this, R.color.colorMenuItemSelected)
+                if (itemOrdenacao.itemId != R.id.menu_lista_produtos_ordenar_sem_ordem) {
                     val menuOrdenacao = menu.findItem(R.id.menu_lista_produtos_ordenar)
                     menuOrdenacao.setIconColor(this, R.color.colorMenuItemSelected)
                 }

@@ -43,7 +43,7 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
             launch {
                 usuario.collect { user ->
                     title = if (user != null) {
-                        "${getString(R.string.app_name)} (${user.nome})"
+                        getString(R.string.app_name_usuario, user.nome)
                     } else {
                         getString(R.string.app_name)
                     }

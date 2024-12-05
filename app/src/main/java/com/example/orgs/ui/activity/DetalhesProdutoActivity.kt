@@ -102,7 +102,7 @@ class DetalhesProdutoActivity : UsuarioBaseActivity() {
             activityDetalhesProdutoValor.text = produto.valor.moedaBR()
             nome?.let {
                 activityDetalhesProdutoUsuario.text =
-                    "${getString(R.string.visualizar_produto_inserido_por)} $it"
+                    getString(R.string.visualizar_produto_inserido_por, it)
             }
         }
     }

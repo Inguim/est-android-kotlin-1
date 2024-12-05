@@ -70,7 +70,7 @@ class ListaProdutosAdapter(
             val valor = binding.produtoItemValor
             valor.text = produto.produto.valor.moedaBR()
             val usuario = binding.produtoItemUsuario
-            usuario.text = "(${produto.usuario.nome})"
+            usuario.text = context.getString(R.string.item_produto_usuario, produto.usuario.nome)
             val imageLoader = binding.imageView.gerarImageLoader(binding.root.context)
             binding.imageView.visibility = if (produto.produto.imagem != null) {
                 View.VISIBLE

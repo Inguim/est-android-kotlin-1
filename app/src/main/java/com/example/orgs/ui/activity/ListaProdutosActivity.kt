@@ -8,17 +8,17 @@ import androidx.lifecycle.lifecycleScope
 import com.example.orgs.R
 import com.example.orgs.database.AppDataBase
 import com.example.orgs.database.OrdenacaoProdutos
+import com.example.orgs.database.dao.ProdutoAndUsuario
 import com.example.orgs.databinding.ActivityListaProdutosBinding
 import com.example.orgs.extensions.setIconColor
 import com.example.orgs.extensions.setTitleColor
-import com.example.orgs.model.Produto
 import com.example.orgs.ui.recyclerView.adapter.ListaProdutosAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
 class ListaProdutosActivity : UsuarioBaseActivity() {
-    private val adapter = ListaProdutosAdapter(context = this)
+    private val adapter = ListaProdutosAdapter(context = this, usuarioAtivo = usuario.value)
     private val binding by lazy {
         ActivityListaProdutosBinding.inflate(layoutInflater)
     }
@@ -56,6 +56,11 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
         super.onResume()
         lifecycleScope.launch {
             launch {
+                usuario.collect {
+                    adapter.usuarioAtivo = it
+                }
+            }
+            launch {
                 ordenacao.filterNotNull().collect {
                     buscarProdutos()
                 }
@@ -67,11 +72,11 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
         usuario.filterNotNull().collect { usuario ->
             ordenacao.collect {
                 if (filtrarPor == FiltroUsuarioProdutos.USUARIO) {
-                    produtoDao.listar(usuario.id, it).collect { produtos ->
+                    produtoDao.listarProdutosComUsuario(usuario.id, it).collect { produtos ->
                         adapter.atualizar(produtos)
                     }
                 } else {
-                    produtoDao.listar(null, it).collect { produtos ->
+                    produtoDao.listarProdutosComUsuario(null, it).collect { produtos ->
                         adapter.atualizar(produtos)
                     }
                 }
@@ -157,7 +162,8 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
 
             else -> null
         }
-        val produtosFiltrados: Flow<List<Produto>> = produtoDao.listar(filtro, ordenacao.value)
+        val produtosFiltrados: Flow<List<ProdutoAndUsuario>> =
+            produtoDao.listarProdutosComUsuario(filtro, ordenacao.value)
         produtosFiltrados.let {
             menuSelecionadoFiltro = item.itemId
             lifecycleScope.launch {
@@ -196,11 +202,11 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
         }
         novaOrdem?.let {
             menuSelecionadoOrdem = item.itemId
-            val produtosOrdenado: Flow<List<Produto>> =
+            val produtosOrdenado: Flow<List<ProdutoAndUsuario>> =
                 if (filtrarPor == FiltroUsuarioProdutos.USUARIO) {
-                    produtoDao.listar(usuario.value!!.id, novaOrdem.order)
+                    produtoDao.listarProdutosComUsuario(usuario.value!!.id, novaOrdem.order)
                 } else {
-                    produtoDao.listar(null, novaOrdem.order)
+                    produtoDao.listarProdutosComUsuario(null, novaOrdem.order)
                 }
             produtosOrdenado.let {
                 lifecycleScope.launch {

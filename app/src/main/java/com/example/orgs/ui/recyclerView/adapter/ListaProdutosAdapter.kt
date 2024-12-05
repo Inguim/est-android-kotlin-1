@@ -9,15 +9,18 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.example.orgs.R
+import com.example.orgs.database.dao.ProdutoAndUsuario
 import com.example.orgs.databinding.ProdutoItemBinding
 import com.example.orgs.extensions.carregar
 import com.example.orgs.extensions.gerarImageLoader
 import com.example.orgs.extensions.moedaBR
 import com.example.orgs.model.Produto
+import com.example.orgs.model.Usuario
 
 class ListaProdutosAdapter(
     private val context: Context,
-    produtos: List<Produto> = emptyList(),
+    var usuarioAtivo: Usuario?,
+    produtos: List<ProdutoAndUsuario> = emptyList(),
     var itemClick: (produto: Produto) -> Unit = {},
     var itemClickByHoldEditar: (produto: Produto) -> Unit = {},
     var itemClickByHoldRemover: (produto: Produto) -> Unit = {}
@@ -37,13 +40,15 @@ class ListaProdutosAdapter(
 
         private fun adicionarItemViewClickHolder() {
             itemView.setOnLongClickListener {
-                PopupMenu(context, itemView).apply {
-                    menuInflater.inflate(
-                        R.menu.menu_detalhes_produto,
-                        menu
-                    )
-                    setOnMenuItemClickListener(this@ViewHolder)
-                }.show()
+                if (::produto.isInitialized && usuarioAtivo?.id == produto.usuarioId) {
+                    PopupMenu(context, itemView).apply {
+                        menuInflater.inflate(
+                            R.menu.menu_detalhes_produto,
+                            menu
+                        )
+                        setOnMenuItemClickListener(this@ViewHolder)
+                    }.show()
+                }
                 true
             }
         }
@@ -56,21 +61,23 @@ class ListaProdutosAdapter(
             }
         }
 
-        fun vincula(produto: Produto) {
-            this.produto = produto
+        fun vincula(produto: ProdutoAndUsuario) {
+            this.produto = produto.produto
             val nome = binding.produtoItemNome
-            nome.text = produto.nome
+            nome.text = produto.produto.nome
             val descricao = binding.produtoItemDescricao
-            descricao.text = produto.descricao
+            descricao.text = produto.produto.descricao
             val valor = binding.produtoItemValor
-            valor.text = produto.valor.moedaBR()
+            valor.text = produto.produto.valor.moedaBR()
+            val usuario = binding.produtoItemUsuario
+            usuario.text = "(${produto.usuario.nome})"
             val imageLoader = binding.imageView.gerarImageLoader(binding.root.context)
-            binding.imageView.visibility = if (produto.imagem != null) {
+            binding.imageView.visibility = if (produto.produto.imagem != null) {
                 View.VISIBLE
             } else {
                 View.GONE
             }
-            binding.imageView.carregar(produto.imagem, imageLoader)
+            binding.imageView.carregar(produto.produto.imagem, imageLoader)
         }
 
         override fun onMenuItemClick(item: MenuItem?): Boolean {
@@ -89,6 +96,7 @@ class ListaProdutosAdapter(
                 return true
             } ?: return false
         }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -105,7 +113,7 @@ class ListaProdutosAdapter(
     override fun getItemCount(): Int = dataset.size
 
     @SuppressLint("NotifyDataSetChanged")
-    fun atualizar(produtos: List<Produto>) {
+    fun atualizar(produtos: List<ProdutoAndUsuario>) {
         this.dataset.clear()
         this.dataset.addAll(produtos)
         notifyDataSetChanged()

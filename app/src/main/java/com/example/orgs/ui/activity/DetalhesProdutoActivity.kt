@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.orgs.R
 import com.example.orgs.database.AppDataBase
@@ -16,7 +15,7 @@ import com.example.orgs.extensions.moedaBR
 import com.example.orgs.model.Produto
 import kotlinx.coroutines.launch
 
-class DetalhesProdutoActivity : AppCompatActivity() {
+class DetalhesProdutoActivity : UsuarioBaseActivity() {
     private var produtoId: Long = 0L
     private var produto: Produto? = null
     private val binding by lazy {
@@ -50,7 +49,15 @@ class DetalhesProdutoActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_detalhes_produto, menu)
+        lifecycleScope.launch {
+            launch {
+                usuario.collect {
+                    if (it?.id == produto?.usuarioId) {
+                        menuInflater.inflate(R.menu.menu_detalhes_produto, menu)
+                    }
+                }
+            }
+        }
         return super.onCreateOptionsMenu(menu)
     }
 

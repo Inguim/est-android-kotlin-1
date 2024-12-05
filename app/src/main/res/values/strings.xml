@@ -33,4 +33,6 @@
     <string name="menu_lista_produtos_filtrar">Filtrar</string>
     <string name="menu_lista_produtos_filtrar_todos">Todos produtos</string>
     <string name="menu_lista_produtos_filtrar_usuario">Seus produtos</string>
+    <string name="lista_produtos_item_inserido_usuario">Inserido por: você</string>
+    <string name="lista_produtos_item_inserido_random">Inserido por</string>
 </resources>

@@ -41,6 +41,18 @@
             tools:text="@tools:sample/lorem/random" />
 
         <TextView
+            android:id="@+id/produto_item_usuario"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:textSize="12sp"
+            android:textStyle="italic"
+            app:layout_constraintEnd_toEndOf="@id/produto_item_descricao"
+            app:layout_constraintStart_toStartOf="@id/produto_item_descricao"
+            app:layout_constraintTop_toBottomOf="@id/produto_item_descricao"
+            tools:text="(Uga)" />
+
+        <TextView
             android:id="@+id/produto_item_valor"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -53,9 +65,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/produto_item_nome"
             app:layout_constraintStart_toStartOf="@id/produto_item_nome"
-            app:layout_constraintTop_toBottomOf="@id/produto_item_descricao"
+            app:layout_constraintTop_toBottomOf="@id/produto_item_usuario"
             tools:text="R$ 19.99" />
-
 
         <ImageView
             android:id="@+id/imageView"

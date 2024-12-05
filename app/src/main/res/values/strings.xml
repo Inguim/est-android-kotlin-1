@@ -30,4 +30,7 @@
     <string name="login_entrar">Entrar</string>
     <string name="login_cadastrar_usuario">cadastrar usuário</string>
     <string name="menu_lista_produtos_deslogar">Deslogar</string>
+    <string name="menu_lista_produtos_filtrar">Filtrar</string>
+    <string name="menu_lista_produtos_filtrar_todos">Todos produtos</string>
+    <string name="menu_lista_produtos_filtrar_usuario">Seus produtos</string>
 </resources>

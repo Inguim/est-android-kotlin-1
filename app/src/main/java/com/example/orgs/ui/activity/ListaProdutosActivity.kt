@@ -26,7 +26,9 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
         val db = AppDataBase.instancia(this)
         db.produtoDao()
     }
-    private var menuSelecionado: Int? = null
+    private var menuSelecionadoOrdem: Int? = null
+    private var menuSelecionadoFiltro: Int? = null
+    private var filtrarPor: FiltroUsuarioProdutos = FiltroUsuarioProdutos.USUARIO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,8 +66,14 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
     private suspend fun buscarProdutos() {
         usuario.filterNotNull().collect { usuario ->
             ordenacao.collect {
-                produtoDao.listarPorUsuario(usuario.id, it).collect { produtos ->
-                    adapter.atualizar(produtos)
+                if (filtrarPor == FiltroUsuarioProdutos.USUARIO) {
+                    produtoDao.listar(usuario.id, it).collect { produtos ->
+                        adapter.atualizar(produtos)
+                    }
+                } else {
+                    produtoDao.listar(null, it).collect { produtos ->
+                        adapter.atualizar(produtos)
+                    }
                 }
             }
         }
@@ -76,18 +84,43 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
+    private fun indicarMenuSelecionadoFiltro(menu: Menu?) {
+        menu?.let {
+            val item: MenuItem = it.findItem(R.id.menu_lista_produtos_filtrar)
+            val subMenu = item.subMenu
+            val itemFiltrando: MenuItem? = when (filtrarPor) {
+                FiltroUsuarioProdutos.TODOS ->
+                    subMenu?.findItem(R.id.menu_lista_produtos_filtrar_todos)
+
+                FiltroUsuarioProdutos.USUARIO ->
+                    subMenu?.findItem(R.id.menu_lista_produtos_filtrar_usuario)
+            }
+            when (filtrarPor) {
+                FiltroUsuarioProdutos.TODOS -> item.setIcon(R.drawable.ic_action_filter_on)
+                FiltroUsuarioProdutos.USUARIO -> item.setIcon(R.drawable.ic_action_filter_off)
+            }
+            item.setIconColor(this, R.color.colorMenuItemSelected)
+            item.setTitleColor(this, R.color.colorMenuItemSelected)
+            itemFiltrando?.let {
+                itemFiltrando.setIconColor(this, R.color.colorMenuItemSelected)
+                itemFiltrando.setTitleColor(this, R.color.colorMenuItemSelected)
+            }
+        }
+    }
+
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        indicarMenuSelecionado(menu)
+        indicarMenuSelecionadoFiltro(menu)
+        indicarMenuSelecionadoOrdenacao(menu)
         return super.onPrepareOptionsMenu(menu)
     }
 
-    private fun indicarMenuSelecionado(menu: Menu?) {
+    private fun indicarMenuSelecionadoOrdenacao(menu: Menu?) {
         menu?.let {
-            menuSelecionado?.let {
-                val itemOrdenacao: MenuItem = menu.findItem(it)
-                itemOrdenacao.setIconColor(this, R.color.colorMenuItemSelected)
-                itemOrdenacao.setTitleColor(this, R.color.colorMenuItemSelected)
-                if (itemOrdenacao.itemId != R.id.menu_lista_produtos_ordenar_sem_ordem) {
+            menuSelecionadoOrdem?.let {
+                val item: MenuItem = menu.findItem(it)
+                item.setIconColor(this, R.color.colorMenuItemSelected)
+                item.setTitleColor(this, R.color.colorMenuItemSelected)
+                if (item.itemId != R.id.menu_lista_produtos_ordenar_sem_ordem) {
                     val menuOrdenacao = menu.findItem(R.id.menu_lista_produtos_ordenar)
                     menuOrdenacao.setIconColor(this, R.color.colorMenuItemSelected)
                 }
@@ -96,7 +129,11 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId != R.id.menu_lista_produtos_deslogar) {
+        if (item.itemId == R.id.menu_lista_produtos_filtrar_usuario ||
+            item.itemId == R.id.menu_lista_produtos_filtrar_todos
+        ) {
+            filtrarProdutos(item)
+        } else if (item.itemId != R.id.menu_lista_produtos_deslogar) {
             ordenarProdutos(item)
         } else {
             lifecycleScope.launch {
@@ -104,6 +141,32 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun filtrarProdutos(item: MenuItem) {
+        val filtro: String? = when (item.itemId) {
+            R.id.menu_lista_produtos_filtrar_todos -> {
+                filtrarPor = FiltroUsuarioProdutos.TODOS
+                null
+            }
+
+            R.id.menu_lista_produtos_filtrar_usuario -> {
+                filtrarPor = FiltroUsuarioProdutos.USUARIO
+                usuario.value?.id
+            }
+
+            else -> null
+        }
+        val produtosFiltrados: Flow<List<Produto>> = produtoDao.listar(filtro, ordenacao.value)
+        produtosFiltrados.let {
+            menuSelecionadoFiltro = item.itemId
+            lifecycleScope.launch {
+                it.collect {
+                    adapter.atualizar(it)
+                }
+            }
+        }
+        invalidateOptionsMenu()
     }
 
     private fun ordenarProdutos(item: MenuItem) {
@@ -132,9 +195,13 @@ class ListaProdutosActivity : UsuarioBaseActivity() {
             else -> null
         }
         novaOrdem?.let {
-            menuSelecionado = item.itemId
+            menuSelecionadoOrdem = item.itemId
             val produtosOrdenado: Flow<List<Produto>> =
-                produtoDao.listarPorUsuario(usuario.value!!.id, novaOrdem.order)
+                if (filtrarPor == FiltroUsuarioProdutos.USUARIO) {
+                    produtoDao.listar(usuario.value!!.id, novaOrdem.order)
+                } else {
+                    produtoDao.listar(null, novaOrdem.order)
+                }
             produtosOrdenado.let {
                 lifecycleScope.launch {
                     atualizarPreferenciaOrdenacao(novaOrdem)

@@ -2,6 +2,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+
+    <item
+        android:id="@+id/menu_lista_produtos_filtrar"
+        android:icon="@drawable/ic_action_filter_off"
+        android:title="@string/menu_lista_produtos_filtrar"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/menu_lista_produtos_filtrar_todos"
+                android:title="@string/menu_lista_produtos_filtrar_todos"
+                />
+            <item
+                android:id="@+id/menu_lista_produtos_filtrar_usuario"
+                android:title="@string/menu_lista_produtos_filtrar_usuario"
+                />
+        </menu>
+    </item>
     <item
         android:id="@+id/menu_lista_produtos_ordenar"
         android:icon="@drawable/ic_action_ordenar"

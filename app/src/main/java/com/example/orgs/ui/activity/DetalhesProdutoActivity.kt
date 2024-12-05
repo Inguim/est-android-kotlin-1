@@ -13,6 +13,7 @@ import com.example.orgs.extensions.gerarImageLoader
 import com.example.orgs.extensions.getLongExtraCompact
 import com.example.orgs.extensions.moedaBR
 import com.example.orgs.model.Produto
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class DetalhesProdutoActivity : UsuarioBaseActivity() {
@@ -25,9 +26,13 @@ class DetalhesProdutoActivity : UsuarioBaseActivity() {
         AppDataBase.instancia(this).produtoDao()
     }
 
+    private val usuarioDAO by lazy {
+        AppDataBase.instancia(this).usuarioDao()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        title = "Detalhes"
+        title = getString(R.string.menu_detalhes_produto_titulo)
         setContentView(binding.root)
         loadProduto()
     }
@@ -41,8 +46,10 @@ class DetalhesProdutoActivity : UsuarioBaseActivity() {
         lifecycleScope.launch {
             produtoDAO.listarPorId(produtoId).collect {
                 produto = it
-                produto?.let {
-                    preencherView(it)
+                produto?.let { p ->
+                    val usuario = usuarioDAO.listarPorId(p.usuarioId!!)
+                    usuario.firstOrNull()?.nome
+                    preencherView(p, usuario.firstOrNull()?.nome)
                 } ?: finish()
             }
         }
@@ -86,13 +93,17 @@ class DetalhesProdutoActivity : UsuarioBaseActivity() {
         produtoId = getLongExtraCompact(CHAVE_PRODUTO_ID, 0L)
     }
 
-    private fun preencherView(produto: Produto) {
+    private fun preencherView(produto: Produto, nome: String?) {
         with(binding) {
             val imageLoader = activityDetalhesProdutoImagem.gerarImageLoader(root.context)
             activityDetalhesProdutoImagem.carregar(produto.imagem, imageLoader)
             activityDetalhesProdutoNome.text = produto.nome
             activityDetalhesProdutoDescricao.text = produto.descricao
             activityDetalhesProdutoValor.text = produto.valor.moedaBR()
+            nome?.let {
+                activityDetalhesProdutoUsuario.text =
+                    "${getString(R.string.visualizar_produto_inserido_por)} $it"
+            }
         }
     }
 }

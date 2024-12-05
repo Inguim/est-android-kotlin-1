@@ -19,5 +19,6 @@
 
     <color name="colorBackground">#ffffff</color>
     <color name="colorMenuItemSelected">#000ed9</color>
+    <color name="colorUsuario">#3F51B5</color>
     <color name="dark_light">#FF000000</color>
 </resources>

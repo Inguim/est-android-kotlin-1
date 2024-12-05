@@ -11,6 +11,7 @@
     <string name="formulario_usuario_error_senha">⚠️ O campo senha é obrigatório e deve ter mais de 6 caractéres!</string>
     <string name="login_usuario_error_usuario">⚠️ O campo usuário é obrigatório!</string>
     <string name="login_usuario_error_senha">⚠️ O campo senha é obrigatório e deve ter mais de 6 caractéres!</string>
+    <string name="menu_detalhes_produto_titulo">Detalhes</string>
     <string name="menu_detalhes_produto_botaoeditar">Editar</string>
     <string name="menu_detalhes_produto_botaoremover">Remover</string>
     <string name="menu_lista_produtos_ordenar">Ordenar</string>
@@ -33,6 +34,5 @@
     <string name="menu_lista_produtos_filtrar">Filtrar</string>
     <string name="menu_lista_produtos_filtrar_todos">Todos produtos</string>
     <string name="menu_lista_produtos_filtrar_usuario">Seus produtos</string>
-    <string name="lista_produtos_item_inserido_usuario">Inserido por: você</string>
-    <string name="lista_produtos_item_inserido_random">Inserido por</string>
+    <string name="visualizar_produto_inserido_por">Inserido por</string>
 </resources>

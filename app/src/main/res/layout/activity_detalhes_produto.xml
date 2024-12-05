@@ -21,6 +21,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/imagem_padrao" />
 
+
         <TextView
             android:id="@+id/activity_detalhes_produto_valor"
             android:layout_width="wrap_content"
@@ -44,6 +45,23 @@
             tools:text="R$ 1299,99" />
 
         <TextView
+            android:id="@+id/activity_detalhes_produto_usuario"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:fontFamily="@font/montserrat_bold"
+            android:textSize="14sp"
+            android:textStyle="bold|italic"
+            android:textColor="@color/colorUsuario"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/activity_detalhes_produto_valor"
+            app:layout_constraintVertical_bias="0.0"
+            tools:text="@tools:sample/lorem[2]" />
+
+        <TextView
             android:id="@+id/activity_detalhes_produto_nome"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -55,7 +73,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/activity_detalhes_produto_valor"
+            app:layout_constraintTop_toBottomOf="@id/activity_detalhes_produto_usuario"
             app:layout_constraintVertical_bias="0.0"
             tools:text="@tools:sample/lorem[10]" />
 
